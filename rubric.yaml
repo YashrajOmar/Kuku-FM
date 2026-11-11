@@ -1,0 +1,154 @@
+# rubric.yaml: the editorial "taste" of the tool. Edit this file, not the code.
+# Nothing in here is specific to one show, so it carries over to any new screenplay.
+
+promo:
+  min_seconds: 20          # brief: promo is 20-60s total
+  max_seconds: 60
+  min_segment_seconds: 3   # a stitched segment shorter than this is just noise
+  hook_window_seconds: 3   # the hook must land inside the first N seconds
+  max_promos_per_episode: 3
+
+# Final score (0-100) = 10 * sum(weight * sub-score), sub-scores are 0-10.
+# hook, cliffhanger, standalone: given by the AI.
+# audience_appeal: computed IN CODE from the themes the AI tagged (table below), so it is auditable.
+weights:
+  hook: 0.30
+  cliffhanger: 0.30
+  standalone: 0.20
+  audience_appeal: 0.20
+
+hook_principles:
+  - "A great hook is a premise you could sell in the title. Change one detail and it dies: 'The 40-Year-Old Virgin' makes you say 'I have to see that', 'The 17-Year-Old Virgin' makes you say 'so what?'. Look for the surprising, specific detail."
+  - "Break a pattern: swap an expected detail for an unexpected one (an 80-year-old where the audience expects a young person)."
+  - "Cold open: jump straight into the exciting or intriguing moment, with no set-up."
+  - "Mystery opening: raise a question the viewer must have answered."
+
+hook_types:
+  cold_open: jumps straight into an intense or intriguing moment with no set-up
+  mystery_opening: raises a question the viewer must have answered
+  threat_or_danger: someone is in immediate danger or is being threatened
+  pattern_break: the opposite of what the viewer expects happens
+  paradox: two facts that should not both be true ("the dead duke is alive")
+  sensual_romantic: kiss, bed, undressing, forbidden attraction
+  slap_or_confrontation: a slap, shove, public humiliation or shouting match
+  shocking_line: a single line of dialogue that stops the scroll
+
+# Two classic cliffhanger families: (1) the hero faces a dangerous or life-threatening situation,
+# (2) a shocking revelation threatens to change the story.
+cliffhanger_types:
+  peril: the main character comes face-to-face with a dangerous or possibly life-threatening situation
+  revelation: a shocking truth comes to light and threatens to change the course of the story
+  unresolved_confrontation: a decision, accusation or question is left hanging mid-beat
+
+cliffhanger_examples:
+  - The door creaked open and then everything went black.
+  - She raised the gun... but who was she aiming at?
+  - He whispered her real name, the one no one else knew.
+  - The letter revealed the truth about his birth--
+  - If you were in his place, would you have done the same?
+
+# For the doc / PPT only (not sent to the AI): famous cliffhangers that show the technique is old and proven.
+reference_examples:
+  - "Star Wars: The Empire Strikes Back, the reveal of Luke's father (revelation)"
+  - "Dallas, 'Who shot J.R.?' (unresolved question)"
+  - "Soap (1978), first US season-ending cliffhanger, an affair between two characters"
+  - "Lost and Game of Thrones, season endings on life-or-death moments (peril)"
+  - "One Thousand and One Nights, Scheherazade ends each story on a cliffhanger to stay alive"
+  - "Dickens, The Old Curiosity Shop, weekly instalments that left Little Nell's fate hanging"
+  - "Thomas Hardy, A Pair of Blue Eyes, Henry Knight slips off a cliff at the end of an instalment"
+
+# ---------------------------------------------------------------------------------------------
+# AUDIENCE THEMES. The AI reads the scene and decides by MEANING which themes it genuinely shows
+# (it never matches words; the "covers" text only tells it what each theme includes).
+# Each tag must cite a line id inside the clip, otherwise code discards it.
+#   weight: 0-10 reward for this theme (final appeal = strongest theme + 25% of the others, max 10)
+#   mode:   reward (default) or flag_only (detected and flagged, but adds no reward)
+#   risk:   how likely an ad platform is to restrict a clip with this theme (none/low/medium/high)
+#   flag:   label shown to the editor
+# "label" is the official wording to use in the PPT / doc.
+# ---------------------------------------------------------------------------------------------
+themes:
+  # Romance and sensuality
+  - {id: kiss, label: "Romantic kiss / physical intimacy", covers: "kiss, liplock", weight: 7, risk: low}
+  - {id: intense_gaze, label: "Intense eye contact / romantic tension", covers: "eyes locked, lingering gaze, charged closeness", weight: 5, risk: none}
+  - {id: bed_scene, label: "Bed / bedroom intimacy", covers: "bed, waking up together, undressed in bed", weight: 7, risk: medium, flag: sexual_content}
+  - {id: sexual_content, label: "Sexual content (sex scene, implied or shown)", covers: "sex", weight: 9, risk: high, flag: sexual_content}
+  - {id: explicit_sexual_act, label: "Explicit sexual act (sexual stimulation / self-stimulation)", covers: "fingering, masturbation", weight: 9, risk: high, flag: sexual_content}
+  - {id: nudity, label: "Nudity / partial nudity", covers: "naked, nude, bare skin, bare chest", weight: 8, risk: high, flag: nudity}
+  - {id: undressing_lingerie, label: "Undressing / underwear / lingerie", covers: "undies, underwear, lingerie, chemise, undressing", weight: 6, risk: medium, flag: nudity}
+  - {id: anatomy_reference, label: "Sexual-anatomy reference (body terms)", covers: "breast, vagina, pussy", weight: 4, risk: medium, flag: sexual_content}
+  - {id: love_triangle, label: "Love triangle / concurrent partners / infidelity", covers: "having many partners at the same time, cheating, affair", weight: 7, risk: low}
+  - {id: age_gap_romance, label: "Age-gap romance between adults", covers: "old with young, different gender, older man with younger woman or the reverse (adults only)", weight: 5, risk: low}
+  - {id: same_sex_romance, label: "Same-sex romance (LGBTQ+ storyline)", covers: "same genders romanticized, same-sex couple", weight: 5, risk: low}
+  - {id: menstruation, label: "Menstruation / women's-health reference", covers: "periods", weight: 3, risk: low}
+  # Conflict, power and danger
+  - {id: slap, label: "Slap / sudden physical confrontation", covers: "slap, shove, grabbing", weight: 7, risk: medium, flag: violence}
+  - {id: hit_spank, label: "Physical violence / corporal punishment", covers: "hit hard, spank, whipping, beating", weight: 6, risk: medium, flag: violence}
+  - {id: bullying_humiliation, label: "Bullying / public humiliation", covers: "bully, humiliation, mocking, being shamed in public", weight: 6, risk: low}
+  - {id: abuse, label: "Abuse (physical, verbal or emotional)", covers: "abusing, abuse, cruelty, coercion", weight: 4, risk: medium, flag: harassment_or_abuse}
+  - {id: harassment, label: "Harassment (sexual or workplace)", covers: "harassment, unwanted advances, stalking", weight: 3, risk: medium, flag: harassment_or_abuse}
+  - {id: sexual_assault, label: "Sexual assault (non-consensual sexual violence)", covers: "rape", weight: 0, mode: flag_only, risk: high, flag: sexual_violence}
+  - {id: crime, label: "Crime (theft, fraud, murder, arrest)", covers: "crime, arrest, theft, murder, fraud", weight: 5, risk: low}
+  - {id: substance_use, label: "Substance use (drugs, cannabis)", covers: "drugs, addiction, substance abuse, weeds when meaning cannabis (NOT garden weeds)", weight: 4, risk: high, flag: substance_use}
+  - {id: fire_peril, label: "Fire / arson / burning danger", covers: "fire, burning, arson", weight: 5, risk: low}
+  - {id: suspense_tension, label: "Dramatic tension / suspense", covers: "tension, standoff, ticking clock", weight: 5, risk: none}
+  - {id: strong_language, label: "Strong language / profanity / derogatory insults", covers: "fuck, asshole, whore, slurs", weight: 3, risk: medium, flag: strong_language}
+  # Story engines
+  - {id: divorce_breakup, label: "Divorce / marital breakup", covers: "divorce, abandoned at the altar, broken engagement", weight: 5, risk: none}
+  - {id: betrayal_exposed, label: "Betrayal / secret exposed / caught in the act", covers: "betrayal, caught red-handed, lies exposed", weight: 6, risk: none}
+  - {id: status_reversal, label: "Sudden status reversal / identity reveal", covers: "servant revealed as royalty, villain defied, hidden identity", weight: 6, risk: none}
+  # Added to complete your 12-category table
+  - {id: kidnapping, label: "Kidnapping / abduction", covers: "kidnapping, abduction", weight: 6, risk: medium, flag: violence}
+  - {id: blackmail, label: "Blackmail / extortion", covers: "blackmail, extortion", weight: 6, risk: low}
+  - {id: torture_threats, label: "Torture / blood / violent threats", covers: "torture, blood, bleeding, threats", weight: 6, risk: medium, flag: violence}
+  - {id: jealousy, label: "Jealousy", covers: "jealousy, possessiveness", weight: 5, risk: none}
+  - {id: discrimination, label: "Discrimination / class prejudice", covers: "discrimination, class prejudice, being looked down on", weight: 4, risk: low}
+  - {id: forbidden_romance, label: "Forbidden romance", covers: "forbidden relationship, secret lovers across a taboo boundary", weight: 7, risk: low}
+  - {id: poverty_inheritance_royalty, label: "Poverty / inheritance / royalty", covers: "poverty, inheritance, dowry, royalty, noble titles", weight: 4, risk: none}
+  - {id: emotional_tension, label: "High-arousal emotional tension", covers: "anger, fear, lust, hatred, sadness, desperation, revenge", weight: 5, risk: none}
+  - {id: mystery_secret, label: "Mystery / hidden identity / secrets", covers: "hidden identity, secrets, unexpected visitors, mysterious letters", weight: 6, risk: none}
+  - {id: accident_life_threat, label: "Death threat / life-threatening situation / accident", covers: "death threats, life-threatening situations, accidents", weight: 6, risk: low}
+  - {id: visual_attraction, label: "Visual attraction (striking location, look or setting)", covers: "beautiful locations, unusual appearances, dramatic settings", weight: 3, risk: none}
+  # Visual aspiration (screenplay text only, so low weight)
+  - {id: luxury_display, label: "Luxury / wealth display", covers: "extremely expensive things, jewels, mansions, lavish gowns", weight: 4, risk: none}
+  - {id: scenic_nature, label: "Scenic nature visual", covers: "beautiful nature scene", weight: 2, risk: none}
+
+# Platform risk is a FLAG for the human editor. It is shown next to every promo.
+# Instagram, TikTok and YouTube restrict ads with nudity, sexual content, drugs or violence.
+# It does NOT change the ranking unless you set a penalty > 0.
+risk_flags:
+  - nudity
+  - sexual_content
+  - sexual_violence
+  - violence
+  - harassment_or_abuse
+  - substance_use
+  - self_harm
+  - strong_language
+  - minors_involved
+platform_risk_penalty:     # points subtracted from the 0-100 score
+  low: 0
+  medium: 0
+  high: 0
+
+# Cross-episode stitching (optional second pass): how many top promos to offer the AI, and how many new ones to keep.
+stitch:
+  pool_size: 2            # kept small so the request fits Groq's free 8,000 tokens/minute limit
+  max_new_promos: 5
+  max_episode_gap: 5      # a joined promo may not pull moments more than this many episodes apart
+  min_coherence: 7        # a cold-viewer judge call must score the join at least this (0-10), else it is dropped
+
+# The 12 categories shown in the app filter. Every theme above belongs to exactly one category.
+categories:
+  1: {name: "Sexual / vulgar", themes: [kiss, bed_scene, sexual_content, explicit_sexual_act, nudity, undressing_lingerie, anatomy_reference, strong_language, menstruation]}
+  2: {name: "Crime", themes: [crime, kidnapping, blackmail, sexual_assault]}
+  3: {name: "Violence", themes: [slap, hit_spank, torture_threats]}
+  4: {name: "Relationships", themes: [love_triangle, divorce_breakup, betrayal_exposed, jealousy]}
+  5: {name: "Social conflict", themes: [bullying_humiliation, abuse, harassment, discrimination]}
+  6: {name: "Taboo relationships", themes: [age_gap_romance, same_sex_romance, forbidden_romance]}
+  7: {name: "Drugs", themes: [substance_use]}
+  8: {name: "Wealth / status", themes: [luxury_display, status_reversal, poverty_inheritance_royalty]}
+  9: {name: "Emotional tension", themes: [suspense_tension, emotional_tension, intense_gaze]}
+  10: {name: "Mystery", themes: [mystery_secret]}
+  11: {name: "Danger", themes: [fire_peril, accident_life_threat]}
+  12: {name: "Visual attraction", themes: [visual_attraction, scenic_nature]}
